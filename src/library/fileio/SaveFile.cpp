@@ -207,7 +207,7 @@ FILE* SaveFile::open(const char *modes) {
             NATIVECALL(stream = fdopen(fd, modes));
             if (stream == nullptr)
                 return nullptr;
-            setvbuf(stream, nullptr, _IONBF, 0);
+            NATIVECALL(setvbuf(stream, nullptr, _IONBF, 0));
             removed = false;
             return stream;
         }
@@ -218,8 +218,8 @@ FILE* SaveFile::open(const char *modes) {
         /* Open a new memory stream using our own custom functions */
         stream = SaveFileStream::open(filename.c_str(), modes);
         if (stream != nullptr) {
-            setvbuf(stream, nullptr, _IONBF, 0);
-
+            NATIVECALL(setvbuf(stream, nullptr, _IONBF, 0));
+        
             /* When we are using our own memory stream, it is not associated with
              * a real fd. So we define a dummy fd, in case games wants to access
              * it using `fileno()`. We need to issue a warning in this case,
@@ -252,7 +252,7 @@ FILE* SaveFile::open(const char *modes) {
         if (stream == nullptr)
             return nullptr;
 
-        setvbuf(stream, nullptr, _IONBF, 0);
+        NATIVECALL(setvbuf(stream, nullptr, _IONBF, 0));
         return stream;
     }
 
@@ -265,7 +265,8 @@ FILE* SaveFile::open(const char *modes) {
      */
     if (strstr(modes, "w") != nullptr) {
         fseek(stream, 0, SEEK_SET);
-        if (fd)
+        /* TODO: Truncating custom savefile streams is not supported! */
+        if (fd < FIRST_SAVEFILE_STREAM_FD)
             ftruncate(fd, 0);
     }
     else if (strstr(modes, "a") != nullptr) {

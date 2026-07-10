@@ -111,6 +111,9 @@ int urandom_get_fd() {
 FILE* urandom_create_file() {
     if (!stream) {
         int readfd = urandom_create_fd();
+
+        GlobalNative gn;
+
         stream = fdopen(readfd, "r");
         setvbuf(stream, nullptr, _IONBF, 0);
     }

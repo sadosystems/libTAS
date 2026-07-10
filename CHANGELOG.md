@@ -7,6 +7,7 @@
 * Add an option to set any environment variable on the game process
 * Add Unity VideoPlayback hooks
 * Add a settings to wait for unity video preparation before playing
+* Add hooks to prevent custom savefile stream buffering
 
 ### Changed
 

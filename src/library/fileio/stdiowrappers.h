@@ -36,6 +36,22 @@ OVERRIDE int fclose (FILE *stream);
 /* Return the system file descriptor for STREAM.  */
 OVERRIDE int fileno (FILE *stream) __THROW;
 
+/* If BUF is NULL, make STREAM unbuffered.
+   Else make it use buffer BUF, of size BUFSIZ.  */
+OVERRIDE void setbuf (FILE *stream, char *buf) __THROW;
+
+/* Make STREAM use buffering mode MODE.
+   If BUF is not NULL, use N bytes of it for buffering;
+   else allocate an internal buffer N bytes long.  */
+OVERRIDE int setvbuf (FILE *stream, char *buf, int modes, size_t n) __THROW;
+
+/* If BUF is NULL, make STREAM unbuffered.
+   Else make it use SIZE bytes of BUF for buffering.  */
+OVERRIDE void setbuffer (FILE *stream, char *buf, size_t size) __THROW;
+
+/* Make STREAM line-buffered.  */
+OVERRIDE void setlinebuf (FILE *stream) __THROW;
+
 }
 
 #endif
