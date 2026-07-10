@@ -28,6 +28,8 @@
 * Vulkan functions loaded through dlsym are correctly hooked
 * Protect pthread keys access
 * Always set savefile streams as read/write
+* Add SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK and SDL_AUDIO_DEVICE_DEFAULT_RECORDING
+  values for SDL_GetAudioDeviceFormat()
 
 ## [1.4.8] - 2026-05-14
 ### Added

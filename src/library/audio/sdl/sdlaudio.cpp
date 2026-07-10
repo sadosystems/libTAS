@@ -382,18 +382,13 @@ static int open_audio_device(const sdl2::SDL_AudioSpec * desired, sdl2::SDL_Audi
 /* Override */ bool SDL_GetAudioDeviceFormat(sdl3::SDL_AudioDeviceID devid, sdl3::SDL_AudioSpec *spec, int *sample_frames)
 {
     LOGTRACE_SIMPLE(LCF_SDL | LCF_SOUND);
-    if (devid >= MAX_SDL_DEVICES)
+    if (devid >= MAX_SDL_DEVICES && devid != sdl3::SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK && devid != sdl3::SDL_AUDIO_DEVICE_DEFAULT_RECORDING)
         return false;
     if (!spec)
         return false;
 
-    if (sdl_devices[devid].id != 0) {
-        spec->freq = sdl_devices[devid].freq;
-        spec->format = sdl_devices[devid].format;
-        spec->channels = sdl_devices[devid].channels;
-    }
-    else {
-        /* Device not opened, fill with global values */
+    if (devid == sdl3::SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK || devid == sdl3::SDL_AUDIO_DEVICE_DEFAULT_RECORDING || sdl_devices[devid].id == 0){
+        /* Ask for default or device not opened, fill with global values */
         spec->freq = Global::shared_config.audio_frequency;
         switch (Global::shared_config.audio_bitdepth) {
             case 8:
@@ -404,6 +399,11 @@ static int open_audio_device(const sdl2::SDL_AudioSpec * desired, sdl2::SDL_Audi
                 break;
         }
         spec->channels = Global::shared_config.audio_channels;
+    }
+    else {
+        spec->freq = sdl_devices[devid].freq;
+        spec->format = sdl_devices[devid].format;
+        spec->channels = sdl_devices[devid].channels;
     }
 
     if (sample_frames) {
