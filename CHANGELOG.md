@@ -26,6 +26,7 @@
 * Fix concurrent access to action queue causing a crash in libTAS
 * Vulkan functions loaded through dlsym are correctly hooked
 * Protect pthread keys access
+* Always set savefile streams as read/write
 
 ## [1.4.8] - 2026-05-14
 ### Added

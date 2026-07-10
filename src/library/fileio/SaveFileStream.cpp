@@ -47,7 +47,7 @@ struct savefile_cookie_t
 static ssize_t savefile_read (void *cookie, char *b, size_t s)
 {
     savefile_cookie_t *c = static_cast<savefile_cookie_t*>(cookie);
-    
+
     if (c->pos + s > c->size) {
         s = c->size - c->pos;
     }
@@ -75,7 +75,7 @@ static ssize_t savefile_read (void *cookie, char *b, size_t s)
 static ssize_t savefile_write (void *cookie, const char *b, size_t s)
 {
     savefile_cookie_t *c = static_cast<savefile_cookie_t*>(cookie);
-    LOG(LL_DEBUG, LCF_FILEIO, "savefile_write called with addr %p and size %zu", c->file_addr, s);
+    // LOG(LL_DEBUG, LCF_FILEIO, "savefile_write called with offset %jd and size %zu", c->pos, s);
 
     size_t file_write = 0;
     
@@ -185,7 +185,10 @@ FILE *SaveFileStream::open (const char *path, const char *mode)
     iof.seek = savefile_seek;
     iof.close = savefile_close;
 
-    FILE *result = fopencookie (c, mode, iof);
+    /* Always open the stream in read/write mode, so that all operations are available.
+     * We hope that games won't rely on the fact that stream operations that were not
+     * allowed for opening should fail! */
+    FILE *result = fopencookie (c, "r+", iof);
     if (result == nullptr) {
         munmap(c->file_addr, c->file_size);
         delete c;
