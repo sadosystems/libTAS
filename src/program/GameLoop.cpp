@@ -98,6 +98,9 @@ void GameLoop::start()
             int ret = waitpid(fork_pid, nullptr, WNOHANG);
             if (ret == fork_pid) {
                 emit alertToShow(QString("Game was closed"));
+                /* Game process died unexpectedly; don't linger in -n mode. */
+                if (!context->interactive)
+                    exit(1);
                 loopExit();
                 return;
             }
@@ -571,9 +574,16 @@ bool GameLoop::startFrameMessages()
             return true;
         case -1:
             std::cerr << "The connection to the game was lost. Exiting" << std::endl;
+            /* The game vanished without a clean quit (e.g. it crashed). In
+             * non-interactive mode there is no UI to fall back to, so exit
+             * with an error code instead of lingering forever (see #702). */
+            if (!context->interactive)
+                exit(1);
             return true;
         case -2:
             std::cerr << "The connection to the game was closed. Exiting" << std::endl;
+            if (!context->interactive)
+                exit(1);
             return true;
         default:
             std::cerr << "Got unknown message!!!" << std::endl;
